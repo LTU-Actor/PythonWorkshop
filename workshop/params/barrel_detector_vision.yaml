@@ -1,0 +1,12 @@
+debug: false
+detect_threshold: 0.1
+hue_high: 10
+hue_low: 0
+sat_high: 255
+sat_low: 95
+val_high: 255
+val_low: 0
+window_height: 0.5
+window_width: 0.5
+x_pos: 0.7
+y_pos: 0.5

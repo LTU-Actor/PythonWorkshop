@@ -1,0 +1,44 @@
+<launch>
+
+   <!-- DBW system -->
+   <arg name="sys" default="false"/>
+   <group if="$(arg sys)">
+     <include file="$(find dbw_polaris_can)/launch/dbw.launch" />
+     <param name="vehicle_flag" value="True" />
+
+   </group>
+
+   <!-- Simulation system -->
+   <group unless="$(arg sys)">
+      <!-- Set vehicle flag -->
+      <param name="vehicle_flag" value="False" />
+
+      <!-- Load map -->
+      <param name="map_dir" value="$(find simple_sim_atrium)/map" />
+      <rosparam command="load" file="$(find simple_sim_atrium)/map/atrium.yaml" />
+
+      <!-- Load robot -->
+      <rosparam command="load" file="$(find simple_sim_atrium)/robot/ACTor.yaml" />
+
+      <include file="$(find simple_sim)/launch/simple_sim.launch">
+        <arg name="show_rviz" value="false" />
+        <arg name="show_kb_teleop" value="false" />
+        <arg name="show_steering" default="false" />
+      </include>
+
+      <!-- Dynamic Reconfigure -->
+      <node name="dynamic_reconfigure_simple_sim" pkg="dynamic_reconfigure" type="dynparam" args="load /simple_sim_node $(find simple_sim_atrium)/robot/ACTor_simple_sim_params.yaml" />
+   </group>
+
+   <!-- Launch the router node -->
+   <node pkg="workshop" type="router.py" name="router" output="screen" />
+
+   <!-- Launch the joystick node and test node -->
+   <param name="joy_node/dev" value="/dev/input/js0" />
+   <node pkg="joy" type="joy_node" name="joy_node" output="screen" />
+
+   <!-- Launch the joy dead reckon node -->
+   <node pkg="workshop" type="joy_dead_reckon_T2c.py" name="joy_dead_reckon" output="screen" />
+
+
+</launch>

@@ -1,0 +1,19 @@
+T1. Wireless Joystick driving using native commands
+    - Physical vehicle completed / Need testing
+    - Simulation requires new interface (native commands to twist)
+
+T2. Dead reckoning behaviors for Joystick buttons. T2a and T2b (+ sim*)
+    - Need to test physical
+
+
+T3. Go forward until white vinyl banner (crosswalk) on the Atrium tile floor is detected (+ sim*)
+
+T3a. If red color detected anytime it must stop and wait until cleared (+ sim*)
+T3b. If a orange construction barrel detected anytime it must stop and wait until cleared. Let’s use one beam of the LIDAR. (+sim*)
+
+T4. Line (carpet edge) following (+ sim*)
+
+
+T5. Lane center following (+ sim*) - Indoor and outdoor
+T5a. Lane following and stop at red (+ sim*)
+T5b. Lane following and stop at red or obstacle (orange barrel) (+ sim*)

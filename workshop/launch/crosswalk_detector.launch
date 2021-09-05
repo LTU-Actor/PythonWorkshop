@@ -1,0 +1,12 @@
+<launch>
+
+   <!-- Launch the sample image -->
+   <node pkg="workshop" type="image_publisher.py" name="image_publisher_node" output="screen" />
+
+   <!-- Launch crosswalk detector -->
+   <node pkg="workshop" type="crosswalk_detector.py" name="crosswalk_detector_node" output="screen" />
+
+   <!-- Dynamic Reconfigure -->
+   <node pkg="rqt_reconfigure" type="rqt_reconfigure" name="rqt_console" args="-t"/>
+
+</launch>

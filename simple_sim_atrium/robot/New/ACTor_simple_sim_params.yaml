@@ -1,0 +1,10 @@
+camera_border: true
+camera_f: 44.0
+camera_phi: 36.0
+camera_z: 2.0
+collision_type: 0
+exterior_walls: false
+lidar_active: true
+lidar_max_dst: 10.0
+lidar_mkr_size: 10
+obstructions: true

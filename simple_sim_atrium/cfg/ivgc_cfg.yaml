@@ -1,0 +1,35 @@
+!!python/object/new:dynamic_reconfigure.encoding.Config
+dictitems:
+  camera_border: True
+  camera_f: 47.0
+  camera_phi: 30.0
+  camera_z: 1.0
+  collision_type: 0
+  exterior_walls:False
+  groups: !!python/object/new:dynamic_reconfigure.encoding.Config
+    dictitems:
+      camera_border: True
+      camera_f: 47.0
+      camera_phi: 30.0
+      camera_z: 1.0
+      collision_type: 0
+      exterior_walls: False
+      groups: !!python/object/new:dynamic_reconfigure.encoding.Config
+        state: []
+      id: 0
+      lidar_active: False
+      lidar_max_dst: 3.5
+      lidar_mkr_size: 7
+      name: Default
+      obstructions: False
+      parameters: !!python/object/new:dynamic_reconfigure.encoding.Config
+        state: []
+      parent: 0
+      state: true
+      type: ''
+    state: []
+  lidar_active: False
+  lidar_max_dst: 3.5
+  lidar_mkr_size: 7
+  obstructions: False
+state: []

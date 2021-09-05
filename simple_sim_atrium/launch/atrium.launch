@@ -1,0 +1,19 @@
+<launch>
+
+  <!-- Load map -->
+  <param name="map_dir" value="$(find simple_sim_atrium)/map" />
+  <rosparam command="load" file="$(find simple_sim_atrium)/map/atrium.yaml" />
+
+  <!-- Load robot -->
+  <rosparam command="load" file="$(find simple_sim_atrium)/robot/ACTor.yaml" />
+
+  <!-- Dynamic Reconfigure -->
+  <node name="dynamic_reconfigure_simple_sim" pkg="dynamic_reconfigure" type="dynparam" args="load /simple_sim_node $(find simple_sim_atrium)/robot/ACTor_simple_sim_params.yaml" />
+
+  <!-- Simple Sim -->
+  <include file="$(find simple_sim)/launch/simple_sim.launch">
+    <arg name="show_rviz" value="false" />
+    <arg name="show_kb_teleop" value="false" />
+  </include>
+
+</launch>

@@ -1,0 +1,15 @@
+<launch>
+
+  <!-- Load map -->
+  <param name="map_dir" value="$(find simple_sim)/map" />
+  <rosparam command="load" file="$(find simple_sim)/map/test_track_1.yaml" />
+
+  <!-- Load robot -->
+  <rosparam command="load" file="$(find simple_sim)/robot/basic_ackermann.yaml" />
+
+  <include file="$(find simple_sim)/launch/simple_sim.launch">
+    <!-- Add launch args here -->
+  </include>
+
+</launch>
+

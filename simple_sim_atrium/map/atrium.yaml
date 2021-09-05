@@ -1,0 +1,26 @@
+# Field image file name
+field_image_file: 'atrium_lane_nogrid.png'
+field_image_file: 'atrium_lane_grid.png'
+field_image_file: 'atrium_line_nogrid.png'
+field_image_file: 'atrium_line_grid.png'
+#field_image_file: 'atrium_only_nogrid.png'
+#field_image_file: 'atrium_only_grid.png'
+#field_image_file: 'atrium_lane_crosswalk_grid.png'
+field_image_file: 'atrium_line_change_grid.png'
+#field_image_file: 'atrium_lane_change_grid.png'
+#field_image_file: 'atrium_lane_change_grid_v2.png'
+
+# Image file scaling and center
+x_scale: 100.0
+y_scale: 100.0
+x_center_img: 400
+y_center_img: 2400
+img_view_scale: 0.25
+
+# Default robot start location
+# Can be overriden in launch file
+Xr_init:  1.5
+Yr_init:  0.0
+Theta_init: 90.0
+
+

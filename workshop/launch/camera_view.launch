@@ -1,0 +1,6 @@
+<launch>
+   <!-- Launch the camera node -->
+   <include file="$(find simple_camera_publisher)/launch/camera_publisher.launch">
+     <arg name="source" default="/dev/v4l/by-id/usb-046d_0809_95B32CCC-video-index0"/>
+   </include>
+</launch>

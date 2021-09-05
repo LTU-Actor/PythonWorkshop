@@ -1,0 +1,54 @@
+<launch>
+
+   <!-- DBW system -->
+   <arg name="sys" default="false"/>
+   <group if="$(arg sys)">
+     <include file="$(find dbw_polaris_can)/launch/dbw.launch" />
+
+     <!-- Set vehicle flag -->
+     <param name="vehicle_flag" value="True" />
+
+     <!-- Launch the camera node -->
+     <include file="$(find simple_camera_publisher)/launch/camera_publisher.launch">
+       <arg name="source" default="/dev/v4l/by-id/usb-046d_0809_95B32CCC-video-index0"/>
+     </include>
+
+     <!-- Load dynamic reconfigure -->
+     <node pkg="rqt_reconfigure" type="rqt_reconfigure" name="rqt_console" args="-t"/>
+
+   </group>
+
+   <!-- Simulation system -->
+   <group unless="$(arg sys)">
+     <!-- Set vehicle flag -->
+     <param name="vehicle_flag" value="False" />
+
+      <!-- Load map -->
+      <param name="map_dir" value="$(find simple_sim_atrium)/map" />
+      <rosparam command="load" file="$(find simple_sim_atrium)/map/atrium.yaml" />
+      <rosparam command="load" file="$(find simple_sim_atrium)/map/atrium_obstacles.yaml" />
+
+      <!-- Load robot -->
+      <rosparam command="load" file="$(find simple_sim_atrium)/robot/ACTor.yaml" />
+
+      <include file="$(find simple_sim)/launch/simple_sim.launch">
+        <arg name="show_rviz" value="false" />
+        <arg name="show_kb_teleop" value="false" />
+        <arg name="show_steering" default="false" />
+      </include>
+
+      <!-- Dynamic Reconfigure -->
+      <node name="dynamic_reconfigure_simple_sim" pkg="dynamic_reconfigure" type="dynparam" args="load /simple_sim_node $(find simple_sim_atrium)/robot/ACTor_simple_sim_params.yaml" />
+   </group>
+  
+   <!-- Launch router node -->
+   <node pkg="workshop" type="router.py" name="router_node" output="screen" />
+  
+   <!-- Launch auto drive node -->
+   <node pkg="workshop" type="auto_drive.py" name="auto_drive_node" output="screen" />  
+
+   <!-- Launch barrel detector node -->
+   <node pkg="workshop" type="barrel_detector_vision.py" name="barrel_detector_node" output="screen" />  
+   <node name="dynamic_reconfigure_barrel" pkg="dynamic_reconfigure" type="dynparam" args="load /barrel_detector_node $(find workshop)/params/barrel_detector_vision.yaml"/>
+
+</launch>

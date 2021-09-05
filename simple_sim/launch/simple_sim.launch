@@ -1,0 +1,65 @@
+<launch>
+
+
+  <!-- ################## -->
+  <!--  Launch Arguments  -->
+  <!-- ################## -->
+
+  <!-- Launch the Keyboard Teleop node -->
+  <arg name="show_kb_teleop" default="true" />
+  <!-- Launch Rviz with the default configuration -->
+  <arg name="show_rviz" default="true" />
+  <!-- Launch the robot steering ui -->
+  <arg name="show_steering" default="true" />
+  <!-- The rviz configuration to load -->
+  <arg name="rviz_config" default="$(find simple_sim)/rviz/simple_sim.rviz" />
+  <!-- Open the image view window -->
+  <arg name="show_image_view" default="true" />
+  <!-- Open dybamic reconfigure window -->
+  <arg name="show_dynamic_reconfigure" default="true" />
+
+
+  <!-- ################ -->
+  <!--  Required Nodes -->
+  <!-- ################ -->
+
+  <!-- The directory of the simple sim package -->
+  <param name="simple_sim_package_dir" value="$(find simple_sim)" />
+
+  <node name="simple_sim_node" pkg="simple_sim" type="simple_sim_node" required="true" output="screen"/>  
+
+
+  <!-- ################ -->
+  <!--  Optional Nodes -->
+  <!-- ################ -->
+
+  <!-- Image View -->
+  <group if="$(arg show_image_view)">
+    <node name="image_view" type = "image_view" pkg="image_view" args="image:=/camera/image_raw"/>
+  </group>
+
+  <!-- Dynamic reconfigure -->
+  <group if="$(arg show_dynamic_reconfigure)">
+    <node pkg="rqt_reconfigure" type="rqt_reconfigure" name="rqt_console" args="-t"/>
+  </group>
+
+  <group if="$(arg show_kb_teleop)">
+    <node name="teleop_twist_keyboard" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" output="screen" launch-prefix="xterm -e"/>
+  </group>
+
+  <group if="$(arg show_rviz)" >
+    <!-- Static transform between world and map -->
+    <node pkg="tf" type="static_transform_publisher" name="tf_map_base" args="0.0 0.0 0.0 0.0 0.0 0.0 /world /map 100"/>
+
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rviz_config)" />
+  </group>
+
+  <!-- Steering -->
+  <group if="$(arg show_steering)" >
+    <node name="rqt_robot_steering" pkg="rqt_robot_steering" type="rqt_robot_steering">
+      <param name="default_topic" value="/cmd_vel" />
+    </node>
+  </group>
+
+
+</launch>

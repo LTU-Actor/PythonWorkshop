@@ -1,0 +1,40 @@
+<launch>
+
+   <!-- Set Parmaters -->
+   <param name="ros_rate" value="50" />
+ 
+
+   <!-- DBW system -->
+   <arg name="sys" default="false"/>
+   <group if="$(arg sys)">
+     <include file="$(find dbw_polaris_can)/launch/dbw.launch" />
+     <param name="cmd_vel_topic" value="/vehicle/cmd_vel" />
+   </group>
+
+   <!-- Simulation system - NEED TO EXPAND THIS APPROACH -->
+   <group unless="$(arg sys)">
+      <!-- Set robot command topic -->
+      <param name="cmd_vel_topic" value="/simulator/cmd_vel" />
+
+      <!-- Load map -->
+      <param name="map_dir" value="$(find simple_sim_crosswalk)/map" />
+      <rosparam command="load" file="$(find simple_sim_crosswalk)/map/crosswalk.yaml" />
+
+      <!-- Load robot -->
+      <rosparam command="load" file="$(find simple_sim_crosswalk)/robot/ackermann.yaml" />
+
+      <include file="$(find simple_sim)/launch/simple_sim.launch">
+        <arg name="show_rviz" value="false" />
+        <arg name="show_kb_teleop" value="false" />
+      </include>
+   </group>
+  
+   <!-- Launch the joystick node and test node -->
+   <param name="joy_node/dev" value="/dev/input/js0" />
+   <!-- param name="joy_node/dev" value="/dev/input/js2" / -->
+   <node pkg="joy" type="joy_node" name="joy_node" output="screen" />
+
+   <!-- Launch the gem joy drive node -->
+   <node pkg="workshop" type="joy_drive.py" name="joy_drive" output="screen" />
+
+</launch>

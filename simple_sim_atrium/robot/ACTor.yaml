@@ -1,0 +1,24 @@
+# Robot type: 'diff_drive_rect', 'diff_drive_circ' or 'acker_steer_rect'
+robot_type: 'acker_steer_rect'
+
+# Robot dimensions
+robot_width:   1.400
+robot_length:  2.600
+wheelbase:     1.750
+#robot_radius:  0.100
+rwheel:        0.289
+wheel_width:   0.155
+trackwidth:    1.550
+axle_dst:      1.000
+max_steer:     0.4
+
+
+# Forward facing camera location and size
+camera_x: 1.5
+camera_y: 0.000
+camera_width:  0.20
+camera_length: 0.50
+lidar_x: 1.0
+lidar_y: 0
+lidar_r: 0.20
+

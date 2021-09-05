@@ -1,0 +1,5 @@
+1) Changed subscriber from /cmd_vel to /simulator/cmd_vel
+2) Added Ackerman steering input based on yaw rate input
+3) Changed color of obstructions
+4) Add load parameters for each simulation loop
+5) Changed camera publisher from /camera_view to /camera/image_raw

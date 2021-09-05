@@ -1,0 +1,19 @@
+# Field image location
+# Note: Image must be in img directory of package
+#       Or use a leading '/' to use an absolute path
+#       For Example '/home/user/pictures/my_image.png'
+field_image_file: 'test_grid.png'
+
+# Image file scaling and center
+x_scale: 1000.0
+y_scale: 1000.0
+x_center_img: 1500
+y_center_img: 1500
+img_view_scale: 0.2
+
+# Default robot start location
+# Can be overriden in launch file
+Xr_init: -1.0
+Yr_init: -1.0
+Theta_init: 0.0
+
