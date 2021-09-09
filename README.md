@@ -26,7 +26,7 @@ If KEYEXPIRED ERROR, https://futurestud.io/tutorials/fix-ubuntu-debian-apt-get-k
 - Remove autostart DBW joystick example launch  
 `rm $HOME/.config/autostart/joystick_demo.desktop`
 
-- Set up workspace
+- Set up workspace  
 `mkdir -p ~/dbw_ws/src && cd ~/dbw_ws`  
 `cd ~/dbw_ws/src`
 
@@ -56,12 +56,14 @@ https://github.com/ltu-ros/simple_camera_publisher
 `catkin_make`  
 
 - Install extra tools  
-`sudo apt-get install ros-noetic-image-view`  
+`sudo apt install ros-noetic-image-view`  
 `sudo apt install ros-noetic-dynamic-reconfigure`  
 `sudo apt install ros-noetic-rqt-reconfigure`  
-`sudo apt install ros-noetic-rosbash`
-`sudo apt install xterm`
-`sudo apt install jstest-gtk`  
+`sudo apt install ros-noetic-rosbash`  
+`sudo apt install ros-noetic-rqt-graph`
+`sudo apt install xterm`  
+`sudo apt install jstest-gtk`
+
 
 ## Execution
 To run an example of the python code to drive the vehicle, use the following commands:  
