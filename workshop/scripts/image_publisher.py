@@ -23,6 +23,7 @@ class ImagePub():
         # Read the image
         fname = '/home/gderose/Pictures/Webcam/2021-06-20-082801.jpg'
         fname = '/home/gderose/Pictures/Webcam/2021-06-20-082302.jpg'
+        fname = '/home/gderose/Pictures/1_0.0261799.jpg'
         img = cv.imread(fname)
 
         # Set parameters

@@ -12,7 +12,6 @@ gen.add('crosswalk',          bool_t,    0, 'Crosswalk',     False)
 gen.add('barrel_vision',      bool_t,    0, 'Barrel Vision', False)
 gen.add('barrel_lidar',       bool_t,    0, 'Barrel Lidar',  False)
 gen.add('line_follow',        bool_t,    0, 'Line Follow',   False)
-gen.add('lane_center',	       bool_t,	   0, 'Lane Center',	False)
 
 gen.add('barrel_x',           double_t,  0, 'Barrel X Pos',   0.0, -4.0,  4.0)
 gen.add('barrel_y',           double_t,  0, 'Barrel Y Pos',   0.0,  0.0, 20.0)

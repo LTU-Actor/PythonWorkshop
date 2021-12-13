@@ -107,7 +107,11 @@ void SimpleSim::setDefaultParameters()
   // Set image scaling
   img_view_scale_ = 1.0;
   
-  // Robot location variables 
+  // Robot location variables
+  init_flag_ = false;
+  Xr_init_ = 0.0;
+  Yr_init_ = 0.0;
+  Theta_init_= 0.0;
   Xr_ = 0.0;
   Yr_ = 0.0;
   Theta_ = 0.0;
@@ -218,18 +222,19 @@ bool SimpleSim::loadParameters()
     {
       ROS_ERROR_STREAM("Missing parameter 'robot_type'");
       return false;
-    }  
-       
-  
+    }       
   
   // Load robot initial location
-  if(nh_.hasParam("Xr_init")) ros::param::get("Xr_init", Xr_);
-  if(nh_.hasParam("Yr_init")) ros::param::get("Yr_init", Yr_);
+  if(nh_.hasParam("Xr_init")) ros::param::get("Xr_init", Xr_init_);
+  if(nh_.hasParam("Yr_init")) ros::param::get("Yr_init", Yr_init_);
   if(nh_.hasParam("Theta_init"))
     {
-      ros::param::get("Theta_init", Theta_);
-      Theta_ = Theta_ * CV_PI/180.0;
+      ros::param::get("Theta_init", Theta_init_);
+      Theta_init_ = Theta_init_ * CV_PI/180.0;
     }
+  Xr_ = Xr_init_;
+  Yr_ = Yr_init_;
+  Theta_ = Theta_init_;
 
   // Robot size parameters
   if(nh_.hasParam("robot_width")) ros::param::get("robot_width", robot_width_);
@@ -343,6 +348,7 @@ void SimpleSim::configCallback(simple_sim::SimpleSimConfig &config, uint32_t lev
     exterior_walls_ = config_.exterior_walls;
     obstructions_ = config_.obstructions;
     collision_model_ = config_.collision_type;
+    init_flag_ = config_.initialize;
 
     // Update camera reference corners for new Zc_
     getRefCameraCorners();
@@ -1754,7 +1760,7 @@ void SimpleSim::timeStep()
   loadObstructions(0);
     
   /////////
-  // 1) Compute time step
+  // 1a) Compute time step
   /////////
   // Get timestep
   ros::Time time_now = ros::Time::now();
@@ -1832,9 +1838,18 @@ void SimpleSim::timeStep()
 	}
     }
 
-  
   /////////
-  // 5) Update global locations and odometry
+  // 5) Reset if initialize flag is set
+  /////////
+  if( init_flag_ )
+    {
+      Xr_ = Xr_init_;
+      Yr_ = Yr_init_;
+      Theta_ = Theta_init_;
+    }
+
+  /////////
+  // 6) Update global locations and odometry
   /////////
   setRotationZ();
   setLidarGlobalLocation();
@@ -1842,7 +1857,7 @@ void SimpleSim::timeStep()
 
   
   /////////
-  // 6) Update images
+  // 7) Update images
   /////////
   display_counter++;
   bool update_time_disp = false;

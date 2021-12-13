@@ -15,7 +15,7 @@
       -->
 
      <!-- Launch the camera node -->
-     <!--<include file="$(find avt_vimba_camera)/launch/mono_camera.launch">
+     <include file="$(find avt_vimba_camera)/launch/mono_camera.launch">
         <arg name="ip" value="192.168.0.40" />
         <arg name="guid" value="50-0536910784" />
         <arg name="frame_id" value="" />
@@ -31,10 +31,6 @@
         <arg name="whitebalance_auto" value="Continuous" />
         <arg name="binning_x" value="2" />
        <arg name="decimation_y" value="2" />
-     </include>-->
-
-     <!-- Launch the camera node -->
-     <include file="$(find avt_vimba_camera)/launch/mono_camera.launch">
      </include>
 
      <!-- Launch Lidar Node -->
@@ -89,10 +85,6 @@
    <!-- Launch line follow node -->
    <node pkg="workshop" type="line_follow.py" name="line_follow_node" output="screen" />
    <node name="dynamic_reconfigure_line" pkg="dynamic_reconfigure" type="dynparam" args="load /line_follow_node $(find workshop)/params/line_follow.yaml"/>
-   
-   <!-- Launch lane center node -->
-   <node pkg="workshop" type="lane_center.py" name="lane_center_node" output="screen" />
-   <node name="dynamic_reconfigure_lane" pkg="dynamic_reconfigure" type="dynparam" args="load /lane_center_node $(find workshop)/params/lane_center.yaml"/>
 
 
 </launch>

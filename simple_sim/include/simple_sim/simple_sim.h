@@ -95,7 +95,11 @@ class SimpleSim
   // Robot type
   int robot_type_;
   
-  // Robot location variables 
+  // Robot location variables
+  bool init_flag_;
+  double Xr_init_;
+  double Yr_init_;
+  double Theta_init_;
   double Xr_;
   double Yr_;
   double Theta_;

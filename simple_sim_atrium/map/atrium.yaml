@@ -7,8 +7,8 @@ field_image_file: 'atrium_line_grid.png'
 #field_image_file: 'atrium_only_grid.png'
 #field_image_file: 'atrium_lane_crosswalk_grid.png'
 field_image_file: 'atrium_line_change_grid.png'
-#field_image_file: 'atrium_lane_change_grid.png'
-#field_image_file: 'atrium_lane_change_grid_v2.png'
+field_image_file: 'atrium_lane_change_grid.png'
+field_image_file: 'atrium_lane_change_grid_v2.png'
 
 # Image file scaling and center
 x_scale: 100.0
@@ -20,7 +20,7 @@ img_view_scale: 0.25
 # Default robot start location
 # Can be overriden in launch file
 Xr_init:  1.5
+Xr_init:  1.7
 Yr_init:  0.0
 Theta_init: 90.0
-
 

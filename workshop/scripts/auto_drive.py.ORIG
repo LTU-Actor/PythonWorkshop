@@ -32,9 +32,7 @@ class AutoDrive():
         self.barrel_vision_detected = False
         self.barrel_vision_lidar = False
         self.enable_line_follow = False
-        self.enable_lane_center = False
         self.line_follow_yaw_rate = 0.0
-        self.lane_center_cmd = 0.0
 
         # Define publishers
         self.pub_twist_cmd = rospy.Publisher('/cmd_vel',
@@ -55,9 +53,6 @@ class AutoDrive():
         # Define line follow steer
         rospy.Subscriber('/line_follow', Float32, self.line_follow_callback,
                          queue_size=1)
-                         
-	# Define lane centering subscriber
-        rospy.Subscriber('/lane_center', Float32, self.lane_center_callback, queue_size=1)
 
 
         # Set up dynamics reconfigure
@@ -83,12 +78,7 @@ class AutoDrive():
 
                 # Check for line follow
                 if(self.enable_line_follow):
-                    rospy.loginfo('999999')
                     self.msg_twist_cmd.angular.z = self.line_follow_yaw_rate
-                
-                if(self.enable_lane_center):
-                    rospy.loginfo('jioewroipjwsergoipjwsrgeoipjreg')
-                    self.msg_twist_cmd.angular.z = self.lane_center_cmd
 
                 # Check for crosswalk
                 if(self.enable_crosswalk):
@@ -129,7 +119,6 @@ class AutoDrive():
         self.enable_barrel_vision = config['barrel_vision']
         self.enable_barrel_lidar = config['barrel_lidar']
         self.enable_line_follow = config['line_follow']
-        self.enable_lane_center = config['lane_center']
 
         # Set the barrel location and size
         barrel_x = config['barrel_x']
@@ -184,11 +173,6 @@ class AutoDrive():
 
         self.line_follow_yaw_rate = data.data
         return
-        
-    #Lane Center Callback
-    def lane_center_callback(self, data):
-    	self.lane_center_cmd = data.data
-    	return
 
 #################    
 # Main function
