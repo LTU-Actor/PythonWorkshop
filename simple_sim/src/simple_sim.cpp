@@ -696,6 +696,27 @@ void SimpleSim::updateFieldImage(const bool update_time_disp,
 	      CV_RGB(0, 0, 255),
 	      2);
 
+  // Notify user if simulation is frozen
+  if( init_flag_ )
+    {
+      int baseline = 0;
+      cv::Size sz;
+      sz = cv::getTextSize("Simulation Stopped",
+			   cv::FONT_HERSHEY_COMPLEX_SMALL,
+			   1,
+			   2,
+			   &baseline);
+      
+      cv::putText(img_view,
+		  "Simulation Stopped",
+		  cv::Point(int(img_view.cols/2 -sz.width/2),
+			    int(img_view.rows/2) ),
+		  cv::FONT_HERSHEY_COMPLEX_SMALL,
+		  1,
+		  CV_RGB(255, 0, 0),
+		  2);
+     
+    }
   // Publish camera view
   // Create message wrapper
   sensor_msgs::ImagePtr msg_pub;
