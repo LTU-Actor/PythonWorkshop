@@ -4,3 +4,4 @@
 4) Add load parameters for each simulation loop
 5) Changed camera publisher from /camera_view to /camera/image_raw
 6) Added initialize dynamic reconfigure flag to restart simulation
+7) Added simulated GPS publisher

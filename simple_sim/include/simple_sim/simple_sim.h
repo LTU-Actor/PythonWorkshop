@@ -6,6 +6,7 @@
 // Include sensor messages
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/LaserScan.h>
+#include <sensor_msgs/NavSatFix.h>
 #include <geometry_msgs/Twist.h>
 #include <nav_msgs/Odometry.h>
 #include <tf/tf.h>
@@ -65,6 +66,7 @@ class SimpleSim
   image_transport::ImageTransport it_;
   ros::Publisher odom_pub_;
   ros::Publisher lidar_scan_pub_;
+  ros::Publisher gps_pub_;
   
   // ROS Topic Subscribers
   ros::Subscriber cmd_vel_sub_;
@@ -105,6 +107,14 @@ class SimpleSim
   double Theta_;
   cv::Matx22f Rz_;
 
+  // GPS variables
+  double latitude_base_;
+  double longitude_base_;
+  double latitude_;
+  double longitude_;
+  cv::Point2f north_unit_vec_;
+  double earth_radius_;
+  
   // Camera parameters and location
   double camera_phi_;                   // Rotation about local y-axis
   int camera_f_;                        // Focal length
@@ -194,6 +204,7 @@ class SimpleSim
 
   // Publish functions
   void publishLidarScan();
+  void publishGPS();
   void publishTransform( const ros::Time time_now);
   
   // Coordinate mapping functions
@@ -242,5 +253,8 @@ class SimpleSim
   void fillLidarScanCircularObstruction(const cv::Point2f center,
 					const double radius );
 
+  // GPS functions
+  void computeGPSLocation();
+  
 };
 #endif // SIMPLE_SIM_H_

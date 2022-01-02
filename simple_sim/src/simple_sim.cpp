@@ -69,7 +69,8 @@ bool SimpleSim::init()
   odom_pub_= nh_.advertise<nav_msgs::Odometry>("/odom", 50);
   
   lidar_scan_pub_ = nh_.advertise<sensor_msgs::LaserScan>("/scan", 50);
-  
+
+  gps_pub_ = nh_.advertise<sensor_msgs::NavSatFix>("/gps", 50);
   
   // Initialize subscribers
   cmd_vel_sub_  = nh_.subscribe("/simulator/cmd_vel", 50,
@@ -116,6 +117,14 @@ void SimpleSim::setDefaultParameters()
   Yr_ = 0.0;
   Theta_ = 0.0;
   cv::Matx22f Rz_(1, 0, 0, 1);
+
+  // GPS variables
+  latitude_base_ = 42.474775859702966;    // Use LTU Ockham's Wedge
+  longitude_base_ = -83.24920586143432;
+  latitude_ = latitude_base_;
+  longitude_ = longitude_base_;
+  north_unit_vec_ = cv::Point2f(0.0,1.0); // North aligned with y-axis
+  earth_radius_ = 6371000;                // m
 
   // Camera parameters and location - will not draw camera
   camera_width_ = 0.0; 
@@ -260,8 +269,28 @@ bool SimpleSim::loadParameters()
   if(nh_.hasParam("lidar_x")) ros::param::get("lidar_x", lidar_x_ref_);
   if(nh_.hasParam("lidar_y")) ros::param::get("lidar_y", lidar_y_ref_);
   if(nh_.hasParam("lidar_r")) ros::param::get("lidar_r", lidar_radius_ref_);
-  
-  
+
+  // GPS variables
+  if(nh_.hasParam("latitude_base")) ros::param::get("latitude_base",
+						    latitude_base_);
+  if(nh_.hasParam("longitude_base")) ros::param::get("longitude_base",
+						     longitude_base_);
+  if(nh_.hasParam("north_vec"))
+    {
+      std::vector<double> tmp;
+      ros::param::get("north_vec", tmp);
+      double dist = sqrt(tmp[0]*tmp[0] + tmp[1]*tmp[1]);
+      if( abs(dist) < 0.001 )
+	{
+	  ROS_ERROR("GPS North Vector Norm is Zero");
+	  exit(0);
+	}
+      tmp[0] = tmp[0] / dist;
+      tmp[1] = tmp[1] / dist;
+      north_unit_vec_ = cv::Point2f(tmp[0],tmp[1]);
+    } 
+  if(nh_.hasParam("earth_radius")) ros::param::get("earth_radius",
+						   earth_radius_);
   // Load the obstructions
   loadObstructions(1);
 
@@ -426,6 +455,34 @@ void SimpleSim::publishLidarScan()
   lidar_scan_pub_.publish(scan);
 
 }
+// End of publishLidarScan
+
+
+
+/////////////////////////////
+// Publish the GPS location
+/////////////////////////////
+void SimpleSim::publishGPS()
+{
+  
+  // Get the current time
+  ros::Time cur_time = ros::Time::now();
+  
+  // Populate the GPS message
+  sensor_msgs::NavSatFix msg;
+  msg.header.stamp = cur_time;
+  msg.header.frame_id = "";
+  msg.latitude = latitude_;
+  msg.longitude = longitude_;
+  msg.altitude = NAN;
+  msg.position_covariance = {0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
+  msg.position_covariance_type = 0u; // COVARIANCE_TYPE_UNKNOWN
+
+  // Publish message
+  gps_pub_.publish(msg);
+
+}
+// End of publishGPS
 
 
 
@@ -468,6 +525,7 @@ void SimpleSim::publishTransform( const ros::Time time_now )
 
 }
 // End of SimpleSim::publishTransform
+
 
 
 /*******************************************************************************
@@ -1738,6 +1796,44 @@ void SimpleSim::fillLidarScanCircularObstruction(const cv::Point2f center,
 
 /*******************************************************************************
 *
+* GPS functions
+*
+*******************************************************************************/
+
+///////////////////////////////////////////////////
+// Compute GPS basd on the current robot location
+///////////////////////////////////////////////////
+void SimpleSim::computeGPSLocation()
+{
+  double x1 = north_unit_vec_.x;
+  double y1 = north_unit_vec_.y;
+  double x2 = Xr_;
+  double y2 = Yr_;
+  
+  double dot = x1*x2 + y1*y2;
+  double det = x1*y2 - y1*x2;
+  double direction = -atan2(det,dot)*180.0/CV_PI;
+  double distance = sqrt(pow(x2,2.0) + pow(y2,2.0));
+
+  latitude_ = asin( sin(latitude_base_*CV_PI/180.0) *
+		    cos(distance/earth_radius_) +
+		    cos(latitude_base_*CV_PI/180.0) *
+		    sin(distance/earth_radius_) *
+		    cos(direction*CV_PI/180.0) ) * 180.0/CV_PI;
+                                 
+  longitude_ = longitude_base_ +
+    atan2( sin(direction*CV_PI/180.0) * sin(distance/earth_radius_) *
+	   cos(latitude_base_*CV_PI/180.0),
+	   cos(distance/earth_radius_) - sin(latitude_base_*CV_PI/180.0) *
+	   sin(latitude_*CV_PI/180.0) ) * 180.0/CV_PI;
+  
+}
+// End of computeGPSLocation
+
+
+
+/*******************************************************************************
+*
 * Public functions
 *
 *******************************************************************************/
@@ -1870,11 +1966,13 @@ void SimpleSim::timeStep()
     }
 
   /////////
-  // 6) Update global locations and odometry
+  // 6) Update global locations, odometry and GPS
   /////////
   setRotationZ();
   setLidarGlobalLocation();
   publishTransform( time_now );
+  computeGPSLocation();
+  publishGPS();
 
   
   /////////
