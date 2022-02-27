@@ -112,8 +112,11 @@ class SimpleSim
   double longitude_base_;
   double latitude_;
   double longitude_;
+  double north_angle_;
   cv::Point2f north_unit_vec_;
+  cv::Matx22f Rz_gps_vel_;
   double earth_radius_;
+  cv::Point2f gps_ned_vel_;
   
   // Camera parameters and location
   double camera_phi_;                   // Rotation about local y-axis
@@ -255,6 +258,7 @@ class SimpleSim
 
   // GPS functions
   void computeGPSLocation();
+  void computeGPSVelocity(double vx, double vy);
   
 };
 #endif // SIMPLE_SIM_H_

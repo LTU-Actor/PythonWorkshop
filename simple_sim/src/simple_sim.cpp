@@ -123,9 +123,14 @@ void SimpleSim::setDefaultParameters()
   longitude_base_ = -83.24920586143432;
   latitude_ = latitude_base_;
   longitude_ = longitude_base_;
-  north_unit_vec_ = cv::Point2f(0.0,1.0); // North aligned with y-axis
+  north_angle_ = 90.0;
+  north_unit_vec_ = cv::Point2f(0.0,1.0); // North aligned with y-axis (90 deg)
+  double na_rad = north_angle_*CV_PI/180.0;
+  Rz_gps_vel_ = cv::Matx22f( cos(na_rad), -sin(na_rad),
+			     sin(na_rad),  cos(na_rad));;
   earth_radius_ = 6371000;                // m
-
+  gps_ned_vel_ = cv::Point2f(0.0,0.0);
+  
   // Camera parameters and location - will not draw camera
   camera_width_ = 0.0; 
   camera_length_= 0.0;
@@ -275,9 +280,22 @@ bool SimpleSim::loadParameters()
 						    latitude_base_);
   if(nh_.hasParam("longitude_base")) ros::param::get("longitude_base",
 						     longitude_base_);
-  if(nh_.hasParam("north_vec"))
+  if(nh_.hasParam("north_angle"))
     {
-      std::vector<double> tmp;
+      ros::param::get("north_angle", north_angle_);
+      cv::Point2f xhat{1.0, 0.0};
+      double na_rad = north_angle_*CV_PI/180.0;      
+      Rz_gps_vel_ = cv::Matx22f( cos(na_rad), -sin(na_rad),
+				 sin(na_rad),  cos(na_rad));
+      north_unit_vec_ = Rz_gps_vel_ * xhat;
+    }
+
+  std::cout << "North Vector = " << north_unit_vec_ << std::endl;
+
+  /*      
+  if(nh_.hasParam("north_angle"))
+    {
+      
       ros::param::get("north_vec", tmp);
       double dist = sqrt(tmp[0]*tmp[0] + tmp[1]*tmp[1]);
       if( abs(dist) < 0.001 )
@@ -289,6 +307,8 @@ bool SimpleSim::loadParameters()
       tmp[1] = tmp[1] / dist;
       north_unit_vec_ = cv::Point2f(tmp[0],tmp[1]);
     } 
+  */
+  
   if(nh_.hasParam("earth_radius")) ros::param::get("earth_radius",
 						   earth_radius_);
   // Load the obstructions
@@ -1800,9 +1820,9 @@ void SimpleSim::fillLidarScanCircularObstruction(const cv::Point2f center,
 *
 *******************************************************************************/
 
-///////////////////////////////////////////////////
-// Compute GPS basd on the current robot location
-///////////////////////////////////////////////////
+////////////////////////////////////////////////////
+// Compute GPS based on the current robot location
+////////////////////////////////////////////////////
 void SimpleSim::computeGPSLocation()
 {
   double x1 = north_unit_vec_.x;
@@ -1829,6 +1849,19 @@ void SimpleSim::computeGPSLocation()
   
 }
 // End of computeGPSLocation
+
+
+
+////////////////////////////////////////////////////////
+// Compute GPS based velociy based on robot velocities
+///////////////////////////////////////////////////////
+void SimpleSim::computeGPSVelocity(double vx, double vy)
+{
+  // Rotate velocity vector and convert to mm/s
+  gps_ned_vel_ = Rz_gps_vel_ * cv::Point2f(vx, vy) * 1000.0;
+  
+}
+// End of computeGPSVelocity
 
 
 
@@ -1906,8 +1939,13 @@ void SimpleSim::timeStep()
   /////////
   // 3) Compute the next state
   /////////
-  Xr_ = Xr_ + linear_x_ * cos(Theta_) * delta_t;
-  Yr_ = Yr_ + linear_x_ * sin(Theta_) * delta_t;
+  //Xr_ = Xr_ + linear_x_ * cos(Theta_) * delta_t;
+  //Yr_ = Yr_ + linear_x_ * sin(Theta_) * delta_t;
+
+  double vx = linear_x_ * cos(Theta_);
+  double vy = linear_x_ * sin(Theta_);
+  Xr_ = Xr_ + vx * delta_t;
+  Yr_ = Yr_ + vy * delta_t; 
 
   if( robot_type_ == DIFF_DRIVE_RECT || robot_type_ == DIFF_DRIVE_CIRC )
     {
@@ -1952,6 +1990,10 @@ void SimpleSim::timeStep()
 
 	  // Set simulation stop flag
 	  obs_sim_stopped_ = true;
+
+	  // Set velocities for GPS
+	  vx = 0.0;
+	  vy = 0.0;
 	}
     }
 
@@ -1972,6 +2014,7 @@ void SimpleSim::timeStep()
   setLidarGlobalLocation();
   publishTransform( time_now );
   computeGPSLocation();
+  computeGPSVelocity(vx, vy);
   publishGPS();
 
   
