@@ -125,9 +125,10 @@ void SimpleSim::setDefaultParameters()
   longitude_ = longitude_base_;
   north_angle_ = 90.0;
   north_unit_vec_ = cv::Point2f(0.0,1.0); // North aligned with y-axis (90 deg)
-  double na_rad = north_angle_*CV_PI/180.0;
-  Rz_gps_vel_ = cv::Matx22f( cos(na_rad), -sin(na_rad),
-			     sin(na_rad),  cos(na_rad));;
+
+  double ang_rad = (north_angle_-90.0)*CV_PI/180.0;
+  Rz_gps_vel_ = cv::Matx22f( cos(ang_rad), -sin(ang_rad),
+			     sin(ang_rad),  cos(ang_rad));;
   earth_radius_ = 6371000;                // m
   gps_ned_vel_ = cv::Point2f(0.0,0.0);
   
@@ -284,10 +285,14 @@ bool SimpleSim::loadParameters()
     {
       ros::param::get("north_angle", north_angle_);
       cv::Point2f xhat{1.0, 0.0};
-      double na_rad = north_angle_*CV_PI/180.0;      
-      Rz_gps_vel_ = cv::Matx22f( cos(na_rad), -sin(na_rad),
-				 sin(na_rad),  cos(na_rad));
-      north_unit_vec_ = Rz_gps_vel_ * xhat;
+      double ang_rad = north_angle_*CV_PI/180.0;
+      north_unit_vec_ = cv::Matx22f( cos(ang_rad), -sin(ang_rad),
+				     sin(ang_rad),  cos(ang_rad)) * xhat;
+      
+      ang_rad = (north_angle_-90.0)*CV_PI/180.0;
+      Rz_gps_vel_ = cv::Matx22f( cos(ang_rad), -sin(ang_rad),
+				 sin(ang_rad),  cos(ang_rad));
+      
     }
 
   std::cout << "North Vector = " << north_unit_vec_ << std::endl;
@@ -1859,7 +1864,13 @@ void SimpleSim::computeGPSVelocity(double vx, double vy)
 {
   // Rotate velocity vector and convert to mm/s
   gps_ned_vel_ = Rz_gps_vel_ * cv::Point2f(vx, vy) * 1000.0;
+
+  // N = gps_ned_vel_.y
+  // E = gps_ned_vel_.x
+  // D = 0.0
   
+  //ROS_INFO("NED N: %8.3e  E: %8.3e (%.2f,%.2f)", gps_ned_vel_.y,
+  //	   gps_ned_vel_.x, vx, vy);
 }
 // End of computeGPSVelocity
 
