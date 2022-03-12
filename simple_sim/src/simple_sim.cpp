@@ -1825,9 +1825,10 @@ void SimpleSim::fillLidarScanCircularObstruction(const cv::Point2f center,
 *
 *******************************************************************************/
 
-////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
 // Compute GPS based on the current robot location
-////////////////////////////////////////////////////
+// Source: https://www.dcode.fr/geographic-coordinates-calculation
+////////////////////////////////////////////////////////////////////
 void SimpleSim::computeGPSLocation()
 {
   double x1 = north_unit_vec_.x;
